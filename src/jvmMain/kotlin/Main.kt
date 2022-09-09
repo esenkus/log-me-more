@@ -47,6 +47,7 @@ fun app() {
                 dropdownList("Device Picker", devices) { selectedDevice = it }
                 dropdownList("Process Picker", processes) { selectedProcess = it }
               }
+
           Row(modifier = Modifier.padding(bottom = 20.dp).fillMaxWidth()) {
             dropdownCheckboxList("LOG Level Filter", logStates) { key, value ->
               println("Changed state of $key to $value")
@@ -59,10 +60,12 @@ fun app() {
               keyFilterText = "Key Filter (${logKeyStates.count { it.value }})"
             }
           }
+
           Row(modifier = Modifier.padding(bottom = 20.dp).fillMaxWidth()) {
             Text(text = "Key Search", modifier = Modifier.weight(1f))
             Text(text = "Value Search", modifier = Modifier.weight(1f), textAlign = TextAlign.End)
           }
+
           Row(modifier = Modifier.padding(bottom = 20.dp).fillMaxWidth()) {
             TextField(
                 singleLine = true,
@@ -79,7 +82,8 @@ fun app() {
           TextField(
               value = loremIpsumText,
               modifier = Modifier.fillMaxSize(),
-              onValueChange = { println("value changed: $it") })
+              onValueChange = { println("value changed: $it") },
+              readOnly = true)
         }
   }
 }
