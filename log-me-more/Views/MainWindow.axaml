@@ -4,7 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        MinWidth="800" MinHeight="450"
+        MinWidth="800" MinHeight="500"
+        Width="800" Height="500"
         x:Class="log_me_more.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Background="{DynamicResource PrimaryBackgroundColor}"
@@ -14,14 +15,29 @@
         <vm:MainWindowViewModel />
     </Design.DataContext>
     <Panel>
-        <ComboBox SelectedIndex="-1" Margin="20,20,0,0" VerticalAlignment="Top" HorizontalAlignment="Left">
-            <ComboBoxItem>Inline Items</ComboBoxItem>
-            <ComboBoxItem>Inline Items 2</ComboBoxItem>
-            <ComboBoxItem>Inline Items 3</ComboBoxItem>
+        <TextBlock Name="DevicePickerTextBlock" Padding="30, 27, 0, 0">Device Picker</TextBlock>
+        <ComboBox Name="DevicePickerComboBox" SelectedIndex="-1" MinWidth="200" Margin="20,20,0,0"
+                  Tapped="devicePickerTapped"
+                  SelectionChanged="devicePickerSelectionChanged" VerticalAlignment="Top" HorizontalAlignment="Left">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding }" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
         </ComboBox>
-        <TextBlock Text="{Binding greeting}" HorizontalAlignment="Center"
-                   VerticalAlignment="Center" />
-        <TextBlock Text="HOWDY THERE FELLAS" HorizontalAlignment="Center"
-                   VerticalAlignment="Top" Padding="0,20,0,0" />
+
+        <TextBlock Name="ProcessPickerTextBlock" Padding="260, 27, 0, 0">Process Picker</TextBlock>
+        <ComboBox Name="ProcessPickerComboBox" SelectedIndex="-1" MinWidth="200" Margin="250,20,0,0"
+                  Tapped="processPickerTapped"
+                  SelectionChanged="processPickerSelectionChanged" VerticalAlignment="Top" HorizontalAlignment="Left">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding }" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+
+        <TextBox Name="LogTextBox" IsReadOnly="True" AcceptsReturn="True" Margin="20, 150, 20, 20"
+                 VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
     </Panel>
 </Window>

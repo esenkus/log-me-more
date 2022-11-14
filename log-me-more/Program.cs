@@ -10,7 +10,6 @@ internal class Program {
     // yet and stuff might break.
     [STAThread]
     public static void Main(string[] args) {
-        Console.Out.WriteLine("HOWDY");
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
     }
