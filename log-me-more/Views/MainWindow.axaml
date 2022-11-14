@@ -1,0 +1,27 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:log_me_more.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        MinWidth="800" MinHeight="450"
+        x:Class="log_me_more.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Background="{DynamicResource PrimaryBackgroundColor}"
+        Title="log_me_more">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+    <Panel>
+        <ComboBox SelectedIndex="-1" Margin="20,20,0,0" VerticalAlignment="Top" HorizontalAlignment="Left">
+            <ComboBoxItem>Inline Items</ComboBoxItem>
+            <ComboBoxItem>Inline Items 2</ComboBoxItem>
+            <ComboBoxItem>Inline Items 3</ComboBoxItem>
+        </ComboBox>
+        <TextBlock Text="{Binding greeting}" HorizontalAlignment="Center"
+                   VerticalAlignment="Center" />
+        <TextBlock Text="HOWDY THERE FELLAS" HorizontalAlignment="Center"
+                   VerticalAlignment="Top" Padding="0,20,0,0" />
+    </Panel>
+</Window>

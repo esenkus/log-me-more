@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="log-me-more/App.axaml" value="log-me-more/log-me-more.csproj" />
+        <entry key="log-me-more/Styles/DarkComboBox.axaml" value="log-me-more/log-me-more.csproj" />
+        <entry key="log-me-more/Views/MainWindow.axaml" value="log-me-more/log-me-more.csproj" />
+      </map>
+    </option>
+  </component>
+</project>
