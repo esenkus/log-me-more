@@ -15,7 +15,10 @@
         <vm:MainWindowViewModel />
     </Design.DataContext>
     <Panel>
-        <TextBlock Name="DevicePickerTextBlock" Padding="30, 27, 0, 0">Device Picker</TextBlock>
+        <TextBlock Name="DevicePickerTextBlock" Padding="30, 27, 0, 0" HorizontalAlignment="Left"
+                   VerticalAlignment="Top">
+            Device Picker
+        </TextBlock>
         <ComboBox Name="DevicePickerComboBox" SelectedIndex="-1" MinWidth="200" Margin="20,20,0,0"
                   Tapped="devicePickerTapped"
                   SelectionChanged="devicePickerSelectionChanged" VerticalAlignment="Top" HorizontalAlignment="Left">
@@ -25,10 +28,13 @@
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
-
-        <TextBlock Name="ProcessPickerTextBlock" Padding="260, 27, 0, 0">Process Picker</TextBlock>
+        <TextBlock Name="ProcessPickerTextBlock" Padding="260, 27, 0, 0" HorizontalAlignment="Left"
+                   VerticalAlignment="Top">
+            Process Picker
+        </TextBlock>
         <ComboBox Name="ProcessPickerComboBox" SelectedIndex="-1" MinWidth="200" Margin="250,20,0,0"
                   Tapped="processPickerTapped"
+                  IsEnabled="False"
                   SelectionChanged="processPickerSelectionChanged" VerticalAlignment="Top" HorizontalAlignment="Left">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
@@ -37,7 +43,66 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
 
-        <TextBox Name="LogTextBox" IsReadOnly="True" AcceptsReturn="True" Margin="20, 150, 20, 20"
-                 VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+        <TextBlock Name="LogLevelPickerTextBlock" Padding="30, 77, 0, 0" HorizontalAlignment="Left"
+                   VerticalAlignment="Top">
+            Log Level Picker
+        </TextBlock>
+        <!-- <Button Margin="20, 70, 0, 0" HorizontalAlignment="Left" VerticalAlignment="Top">Log Level Picker</Button> -->
+        <ComboBox Name="LogLevelPicker" SelectedIndex="-1" MinWidth="200" Margin="20,70,0,0"
+                  VerticalAlignment="Top" HorizontalAlignment="Left" Tapped="logLevelComboBoxTapped"
+                  SelectionChanged="logLevelComboBoxSelectionChanged">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <Panel Name="LogLevelPanel">
+                        <TextBlock Padding="30, 5, 0, 0" Text="{Binding name}" />
+                        <CheckBox IsChecked="{Binding isSelected}" />
+                    </Panel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+        <TextBlock Name="LogKeyPickerTextBlock" HorizontalAlignment="Right" VerticalAlignment="Top"
+                   Padding="0, 77, 110, 0">
+            Log Key Picker
+        </TextBlock>
+        <ComboBox Name="LogKeyPicker" SelectedIndex="-1" MinWidth="200" Margin="20,70,20,0"
+                  Tapped="devicePickerTapped"
+                  SelectionChanged="devicePickerSelectionChanged" VerticalAlignment="Top" HorizontalAlignment="Right">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding }" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+
+        <TextBlock Name="KeySearchTextBlock" HorizontalAlignment="Left" VerticalAlignment="Top"
+                   Padding="30, 127, 0, 0">
+            Key Search
+        </TextBlock>
+        <TextBox Name="KeySearchTextBox" Margin="20, 120, 0, 0"
+                 VerticalAlignment="Top" HorizontalAlignment="Left" MinWidth="300"
+                 Text="{Binding keySearchText, Mode=TwoWay}" />
+
+        <TextBlock Name="ValueSearchTextBlock" HorizontalAlignment="Right" VerticalAlignment="Top"
+                   Padding="0, 127, 220, 0">
+            Value Search
+        </TextBlock>
+        <TextBox Name="ValueSearchTextBox" Margin="0, 120, 20, 0"
+                 VerticalAlignment="Top" HorizontalAlignment="Right" MinWidth="300"
+                 Text="{Binding valueSearchText, Mode=TwoWay}" />
+
+        <ListBox Name="LogLevelListBox" Margin="20" SelectionMode="Multiple, Toggle" MinWidth="200" MinHeight="200"
+                 VerticalAlignment="Center"
+                 HorizontalAlignment="Center">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Panel>
+                        <TextBlock Text="{Binding name}" />
+                    </Panel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!-- <TextBox Name="LogTextBox" IsReadOnly="True" AcceptsReturn="True" Margin="20, 180, 20, 20" -->
+        <!--          VerticalAlignment="Stretch" HorizontalAlignment="Stretch" /> -->
     </Panel>
 </Window>

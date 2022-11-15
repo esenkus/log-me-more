@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace log_me_more.Services;
 
 public class FakeDataService {
@@ -122,4 +124,6 @@ public class FakeDataService {
 11-14 16:01:14.482  1999  2038 W android.os.Debug: failed to get memory consumption info: -1
 11-14 16:01:18.052  1889  1889 E netmgr  : Failed to open QEMU pipe 'qemud:network': Invalid argument
 11-14 16:01:43.998  2998  3244 I MicroDetectionWorker: #startMicroDetector [speakerMode: 0]";
+
+    public readonly static List<string> FAKE_DEVICES = new() { "Emulator-8884", "Pixel-4a-5G", "Emulator-88834" };
 }
