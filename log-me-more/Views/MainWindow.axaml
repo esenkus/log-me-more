@@ -62,19 +62,24 @@
             <ListBox Name="LogLevelListBox" SelectionChanged="logLevelSelectionChanged" Margin="0, 40, 0, 0"
                      SelectionMode="Multiple, Toggle" />
         </Panel>
-        <TextBlock Name="LogKeyPickerTextBlock" HorizontalAlignment="Right" VerticalAlignment="Top"
-                   Padding="0, 77, 110, 0">
+        <Button Name="LogKeyButton" Margin="00, 70, 20, 0" HorizontalAlignment="Right" VerticalAlignment="Top"
+                Click="logKeyButtonClicked">
             Log Key Picker
-        </TextBlock>
-        <ComboBox Name="LogKeyPicker" SelectedIndex="-1" MinWidth="200" Margin="20,70,20,0"
-                  Tapped="devicePickerTapped"
-                  SelectionChanged="devicePickerSelectionChanged" VerticalAlignment="Top" HorizontalAlignment="Right">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding }" />
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
+        </Button>
+        <Panel IsVisible="False" ZIndex="1" Name="LogKeyPanel" Width="200"
+               Height="270" VerticalAlignment="Top"
+               HorizontalAlignment="Right" Margin="0, 70, 20,0">
+            <Button Name="LogKeySelectAllButton" Margin="5, 5, 0, 0" HorizontalAlignment="Left"
+                    VerticalAlignment="Top" Click="logKeySelectAllButtonClicked">
+                Select All
+            </Button>
+            <Button Name="LogKeySelectNoneButton" Margin="0, 5, 5, 0" HorizontalAlignment="Right"
+                    VerticalAlignment="Top" Click="logKeySelectNoneButtonClicked">
+                Select None
+            </Button>
+            <ListBox Name="LogKeyListBox" SelectionChanged="logKeySelectionChanged" Margin="0, 40, 0, 0"
+                     SelectionMode="Multiple, Toggle" />
+        </Panel>
 
         <TextBlock Name="KeySearchTextBlock" HorizontalAlignment="Left" VerticalAlignment="Top"
                    Padding="30, 127, 0, 0">

@@ -14,10 +14,11 @@ namespace log_me_more.Views;
 
 public partial class MainWindow : Window {
     private readonly AdbWrapper adbWrapper = new();
+    private readonly List<string> logKeys;
+    private readonly SelectionModel<string> logKeySelectionModel;
     private readonly List<string> logLevels;
     private readonly SelectionModel<string> logLevelSelectionModel;
     private List<string> devices;
-    private List<string> logKeys;
 
     public MainWindow() {
         InitializeComponent();
@@ -27,6 +28,7 @@ public partial class MainWindow : Window {
         logLevelSelectionModel = new SelectionModel<string> { SingleSelect = false };
         logLevels = LogLevels.getAllLevels();
 
+        logKeySelectionModel = new SelectionModel<string> { SingleSelect = false };
         logKeys = FakeDataService.FAKE_LOG_KEYS;
 
         KeySearchTextBox.ObservableForProperty(textBox => textBox.Text, skipInitial: true)
@@ -40,11 +42,17 @@ public partial class MainWindow : Window {
         devices = FakeDataService.FAKE_DEVICES;
 
         DevicePickerComboBox.Items = devices;
+
         LogLevelListBox.Items = logLevels;
         LogLevelListBox.Selection = logLevelSelectionModel;
         logLevelSelectionModel.SelectAll();
 
+        LogKeyListBox.Items = logKeys;
+        LogKeyListBox.Selection = logKeySelectionModel;
+        logKeySelectionModel.SelectAll();
+
         LogLevelPanel.Background = LogLevelListBox.Background;
+        LogKeyPanel.Background = LogKeyListBox.Background;
 
         ProcessPickerComboBox.Items = new List<string> { "asd", "qwerty" };
         LogTextBox.Text = FakeDataService.FAKE_LOG;
@@ -78,9 +86,15 @@ public partial class MainWindow : Window {
         }
     }
 
-    private void processPickerTapped(object? sender, RoutedEventArgs e) { }
+    private void processPickerTapped(object? sender, RoutedEventArgs e) {
+        
+    }
 
-    private void processPickerSelectionChanged(object? sender, SelectionChangedEventArgs e) { }
+    private void processPickerSelectionChanged(object? sender, SelectionChangedEventArgs e) {
+        var comboBox = (ComboBox)sender!;
+        Console.Out.WriteLine("Selection changed to " + comboBox.SelectedItem);
+        ProcessPickerTextBlock.IsVisible = comboBox.SelectedIndex == -1;
+    }
 
     private void keySearchTextBoxChanged(IObservedChange<TextBox, string> newValue) {
         KeySearchTextBlock.IsVisible = newValue.Value.Length == 0;
@@ -98,10 +112,6 @@ public partial class MainWindow : Window {
         return (MainWindowViewModel)DataContext!;
     }
 
-    private void logLevelButtonClicked(object? sender, RoutedEventArgs e) {
-        LogLevelPanel.IsVisible = true;
-    }
-
     private void windowClicked(object? sender, RoutedEventArgs e) {
         var clickedOn = e.Source!.InteractiveParent!.GetType();
         if (clickedOn == typeof(ContentPresenter) || clickedOn == typeof(Button)) {
@@ -109,7 +119,12 @@ public partial class MainWindow : Window {
         }
         if (clickedOn != typeof(ListBoxItem)) {
             LogLevelPanel.IsVisible = false;
+            LogKeyPanel.IsVisible = false;
         }
+    }
+
+    private void logLevelButtonClicked(object? sender, RoutedEventArgs e) {
+        LogLevelPanel.IsVisible = true;
     }
 
     private void logLevelSelectionChanged(object? sender, SelectionChangedEventArgs e) {
@@ -123,5 +138,22 @@ public partial class MainWindow : Window {
 
     private void logLevelSelectNoneButtonClicked(object? sender, RoutedEventArgs e) {
         logLevelSelectionModel.DeselectRange(0, int.MaxValue);
+    }
+
+    private void logKeyButtonClicked(object? sender, RoutedEventArgs e) {
+        LogKeyPanel.IsVisible = true;
+    }
+
+    private void logKeySelectionChanged(object? sender, SelectionChangedEventArgs e) {
+        Console.Out.WriteLine("Selected items changed, we now have: " +
+                              string.Join(", ", logKeySelectionModel.SelectedItems));
+    }
+
+    private void logKeySelectAllButtonClicked(object? sender, RoutedEventArgs e) {
+        logKeySelectionModel.SelectAll();
+    }
+
+    private void logKeySelectNoneButtonClicked(object? sender, RoutedEventArgs e) {
+        logKeySelectionModel.DeselectRange(0, int.MaxValue);
     }
 }
