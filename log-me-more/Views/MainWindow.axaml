@@ -44,6 +44,12 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
 
+        <Button Name="PasteFromClipboardButton" Margin="0, 20, 20, 0" HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Click="pasteFromClipboardButtonClicked">
+            Paste from clipboard
+        </Button>
+
         <Button Name="LogLevelButton" Margin="20, 70, 0, 0" HorizontalAlignment="Left" VerticalAlignment="Top"
                 Click="logLevelButtonClicked">
             Log Level Picker

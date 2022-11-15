@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Selection;
@@ -155,5 +157,9 @@ public partial class MainWindow : Window {
 
     private void logKeySelectNoneButtonClicked(object? sender, RoutedEventArgs e) {
         logKeySelectionModel.DeselectRange(0, int.MaxValue);
+    }
+
+    private void pasteFromClipboardButtonClicked(object? sender, RoutedEventArgs e) {
+        LogTextBox.Text = Application.Current!.Clipboard!.GetTextAsync().Result;
     }
 }
