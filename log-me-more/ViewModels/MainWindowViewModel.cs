@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ReactiveUI;
+﻿using ReactiveUI;
 
 namespace log_me_more.ViewModels;
 
@@ -16,6 +15,4 @@ public class MainWindowViewModel : ViewModelBase {
         get => _valueSearchText;
         set => this.RaiseAndSetIfChanged(ref _valueSearchText, value);
     }
-
-    public List<string> items => new() { "asd", "zxc" };
 }

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
+using Avalonia.Controls.Selection;
 using Avalonia.Interactivity;
 using log_me_more.Models;
 using log_me_more.Services;
@@ -12,16 +14,20 @@ namespace log_me_more.Views;
 
 public partial class MainWindow : Window {
     private readonly AdbWrapper adbWrapper = new();
-    private readonly List<CheckBoxComboBoxItem> logLevels;
+    private readonly List<string> logLevels;
+    private readonly SelectionModel<string> logLevelSelectionModel;
     private List<string> devices;
+    private List<string> logKeys;
 
     public MainWindow() {
         InitializeComponent();
         DataContext = new MainWindowViewModel();
         Console.Out.WriteLine("HOWDY");
 
-        logLevels = LogLevels.getAllLevels()
-            .Select(logLevel => new CheckBoxComboBoxItem { name = logLevel, isSelected = false }).ToList();
+        logLevelSelectionModel = new SelectionModel<string> { SingleSelect = false };
+        logLevels = LogLevels.getAllLevels();
+
+        logKeys = FakeDataService.FAKE_LOG_KEYS;
 
         KeySearchTextBox.ObservableForProperty(textBox => textBox.Text, skipInitial: true)
             .Subscribe(keySearchTextBoxChanged);
@@ -35,8 +41,11 @@ public partial class MainWindow : Window {
 
         DevicePickerComboBox.Items = devices;
         LogLevelListBox.Items = logLevels;
+        LogLevelListBox.Selection = logLevelSelectionModel;
+        logLevelSelectionModel.SelectAll();
+
         ProcessPickerComboBox.Items = new List<string> { "asd", "qwerty" };
-        // LogTextBox.Text = FakeDataService.FAKE_LOG;
+        LogTextBox.Text = FakeDataService.FAKE_LOG;
     }
 
     private void devicePickerSelectionChanged(object? sender, SelectionChangedEventArgs e) {
@@ -87,7 +96,22 @@ public partial class MainWindow : Window {
         return (MainWindowViewModel)DataContext!;
     }
 
-    private void logLevelComboBoxSelectionChanged(object? sender, SelectionChangedEventArgs e) { }
+    private void logLevelButtonClicked(object? sender, RoutedEventArgs e) {
+        LogLevelPanel.IsVisible = true;
+    }
 
-    private void logLevelComboBoxTapped(object? sender, RoutedEventArgs e) { }
+    private void windowClicked(object? sender, RoutedEventArgs e) {
+        var clickedOn = e.Source!.InteractiveParent!.GetType();
+        if (clickedOn == typeof(ContentPresenter) || clickedOn == typeof(Button)) {
+            return;
+        }
+        if (clickedOn != typeof(ListBoxItem)) {
+            LogLevelPanel.IsVisible = false;
+        }
+    }
+
+    private void logLevelSelectionChanged(object? sender, SelectionChangedEventArgs e) {
+        Console.Out.WriteLine("Selected items changed, we now have: " +
+                              string.Join(", ", logLevelSelectionModel.SelectedItems));
+    }
 }

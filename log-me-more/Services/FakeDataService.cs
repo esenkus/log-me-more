@@ -126,4 +126,9 @@ public class FakeDataService {
 11-14 16:01:43.998  2998  3244 I MicroDetectionWorker: #startMicroDetector [speakerMode: 0]";
 
     public readonly static List<string> FAKE_DEVICES = new() { "Emulator-8884", "Pixel-4a-5G", "Emulator-88834" };
+
+    public readonly static List<string> FAKE_LOG_KEYS = new() {
+        "netmgr", "MicroDetectionWorker", "memtrack", "ActivityManager", "android.os.Debug", "Zygote", "ErrorReporter",
+        "Conscrypt", "YouTube", "MicroDetector"
+    };
 }
