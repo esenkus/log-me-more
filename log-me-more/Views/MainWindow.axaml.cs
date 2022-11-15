@@ -44,6 +44,8 @@ public partial class MainWindow : Window {
         LogLevelListBox.Selection = logLevelSelectionModel;
         logLevelSelectionModel.SelectAll();
 
+        LogLevelPanel.Background = LogLevelListBox.Background;
+
         ProcessPickerComboBox.Items = new List<string> { "asd", "qwerty" };
         LogTextBox.Text = FakeDataService.FAKE_LOG;
     }
@@ -113,5 +115,13 @@ public partial class MainWindow : Window {
     private void logLevelSelectionChanged(object? sender, SelectionChangedEventArgs e) {
         Console.Out.WriteLine("Selected items changed, we now have: " +
                               string.Join(", ", logLevelSelectionModel.SelectedItems));
+    }
+
+    private void logLevelSelectAllButtonClicked(object? sender, RoutedEventArgs e) {
+        logLevelSelectionModel.SelectAll();
+    }
+
+    private void logLevelSelectNoneButtonClicked(object? sender, RoutedEventArgs e) {
+        logLevelSelectionModel.DeselectRange(0, int.MaxValue);
     }
 }

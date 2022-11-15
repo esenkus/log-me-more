@@ -51,7 +51,15 @@
         <Panel IsVisible="False" ZIndex="1" Name="LogLevelPanel" Width="200"
                Height="270" VerticalAlignment="Top"
                HorizontalAlignment="Left" Margin="20, 70, 0,0">
-            <ListBox Name="LogLevelListBox" SelectionChanged="logLevelSelectionChanged" Margin="20"
+            <Button Name="LogLevelSelectAllButton" Margin="5, 5, 0, 0" HorizontalAlignment="Left"
+                    VerticalAlignment="Top" Click="logLevelSelectAllButtonClicked">
+                Select All
+            </Button>
+            <Button Name="LogLevelSelectNoneButton" Margin="0, 5, 5, 0" HorizontalAlignment="Right"
+                    VerticalAlignment="Top" Click="logLevelSelectNoneButtonClicked">
+                Select None
+            </Button>
+            <ListBox Name="LogLevelListBox" SelectionChanged="logLevelSelectionChanged" Margin="0, 40, 0, 0"
                      SelectionMode="Multiple, Toggle" />
         </Panel>
         <TextBlock Name="LogKeyPickerTextBlock" HorizontalAlignment="Right" VerticalAlignment="Top"
