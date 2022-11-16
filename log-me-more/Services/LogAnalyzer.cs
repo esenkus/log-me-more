@@ -23,20 +23,22 @@ public class LogAnalyzer {
         return logLines.Select(logLine => logLine.logKey).OrderBy(logLine => logLine).ToHashSet();
     }
 
-    public string filterBy(HashSet<LogLevel> logLevels, HashSet<string> logKeys, string valueFilter = "") {
-        List<string> filteredLines;
-        if (valueFilter.Any()) {
-            filteredLines = logLines
-                .Where(logLine => logLevels.Contains(logLine.logLevel))
-                .Where(logLine => logKeys.Contains(logLine.logKey))
-                .Where(logLine => logLine.logMessage.ToLower().Contains(valueFilter.ToLower()))
-                .Select(logLine => logLine.ToString()).ToList();
-        } else {
-            filteredLines = logLines
-                .Where(logLine => logLevels.Contains(logLine.logLevel))
-                .Where(logLine => logKeys.Contains(logLine.logKey))
-                .Select(logLine => logLine.ToString()).ToList();
+    public string filterBy(HashSet<LogLevel> logLevels, HashSet<string> logKeys, string valueFilter = "",
+        string keyFilter = "") {
+        var keyFilters = keyFilter.Split(" ").Select(key => key.ToLower()).Where(key => key.Trim().Any()).ToHashSet();
+
+        var filteredLines = logLines
+            .Where(logLine => logLevels.Contains(logLine.logLevel))
+            .Where(logLine => logKeys.Contains(logLine.logKey));
+
+        if (keyFilter.Any()) {
+            filteredLines = filteredLines
+                .Where(logLine => keyFilters.Any(key => logLine.logKey.ToLower().Contains(key)));
         }
-        return string.Join("\n", filteredLines);
+        if (valueFilter.Any()) {
+            filteredLines = filteredLines
+                .Where(logLine => logLine.logMessage.ToLower().Contains(valueFilter.ToLower()));
+        }
+        return string.Join("\n", filteredLines.Select(logLine => logLine.ToString()).ToList());
     }
 }

@@ -102,6 +102,7 @@ public partial class MainWindow : Window {
         KeyFilterTextBlock.IsVisible = newValue.Value.Length == 0;
         Console.Out.WriteLine("Current text: " + newValue.Value);
         Console.Out.WriteLine("prop text: " + getContext().keyFilterText);
+        handleLogFiltering();
     }
 
     private void valueFilterTextBoxChanged(IObservedChange<TextBox, string> newValue) {
@@ -134,12 +135,14 @@ public partial class MainWindow : Window {
         var logLevelItems = logLevelSelectionModel.SelectedItems.ToHashSet();
         var logKeyItems = logKeySelectionModel.SelectedItems.ToHashSet();
         var valueFilter = getContext().valueFilterText;
+        var keyFilter = getContext().keyFilterText;
 
-        if (logLevelItems.Count == logLevels.Count && logKeyItems.Count == logKeys.Count && !valueFilter.Any()) {
+        if (logLevelItems.Count == logLevels.Count && logKeyItems.Count == logKeys.Count && !valueFilter.Any() &&
+            !keyFilter.Any()) {
             LogTextBox.Text = logAnalyzer.showAllLogs();
             return;
         }
-        LogTextBox.Text = logAnalyzer.filterBy(logLevelItems, logKeyItems, valueFilter);
+        LogTextBox.Text = logAnalyzer.filterBy(logLevelItems, logKeyItems, valueFilter, keyFilter);
     }
 
     private void logLevelSelectionChanged(object? sender, SelectionChangedEventArgs e) {
