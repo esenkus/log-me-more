@@ -12,6 +12,6 @@ An feature rich android log viewer written in AvaloniaUI - C# cross platform GUI
 * Ability to save log keys and always apply them from settings
 * Search inside of log key picker
 * Search in log file (ctrl + f, not filtering)
-* Color support for logs (will require creating an advanced view)
+* Color support for logs (will require creating an advanced view, maybe this will help https://github.com/AvaloniaUI/AvaloniaEdit)
 * Load log from file
 * Show/Hide specific columns of logs (processId, date and etc.)
