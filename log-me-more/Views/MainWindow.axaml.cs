@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Selection;
@@ -23,6 +24,7 @@ public partial class MainWindow : Window {
     private List<string> devices;
     private HashSet<string> logKeys;
     private SelectionModel<string> logKeySelectionModel;
+    private CancellationTokenSource adbLogCommandTokenSource;
 
     public MainWindow() {
         InitializeComponent();
@@ -79,7 +81,9 @@ public partial class MainWindow : Window {
     private void handleAdbLoggingForDevice(string deviceId) {
         logAnalyzer.clearLogs();
 
-        adbWrapper.startLogging(deviceId).Result.ForEachAsync(commandEvent => {
+        adbLogCommandTokenSource = new CancellationTokenSource();
+        CancellationToken token = adbLogCommandTokenSource.Token;
+        adbWrapper.startLogging(deviceId, token).Result.ForEachAsync(commandEvent => {
             switch (commandEvent) {
                 case ExitedCommandEvent exited:
                     Console.Out.WriteLine($"Process exited: {exited.ExitCode}");
@@ -90,11 +94,6 @@ public partial class MainWindow : Window {
                 case StandardOutputCommandEvent stdOut:
                     Console.Out.WriteLine($"output: {stdOut.Text}");
                     logAnalyzer.addNewLine(stdOut.Text);
-                    // logKeys.Clear();
-                    // foreach (var key in logAnalyzer.getAllKeys()) {
-                    //     logKeys.Add(key);
-                    // }
-                    // LogKeyListBox.Items = logKeys;
                     // Dispatcher.UIThread.InvokeAsync(recreateLogKeysAndHandleFiltering);
                     break;
                 case StartedCommandEvent started:
@@ -220,6 +219,7 @@ public partial class MainWindow : Window {
         logLevelSelectionModel.SelectAll();
         recreateLogKeysAndHandleFiltering();
         logKeySelectionModel.SelectAll();
+        adbLogCommandTokenSource.Cancel();
     }
 
     private void recreateLogKeysAndHandleFiltering() {

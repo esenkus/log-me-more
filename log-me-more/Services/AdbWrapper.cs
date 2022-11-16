@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CliWrap;
 using CliWrap.Buffered;
@@ -26,12 +27,12 @@ public class AdbWrapper {
         return devices;
     }
 
-    public async Task<IObservable<CommandEvent>> startLogging(string deviceId) {
+    public async Task<IObservable<CommandEvent>> startLogging(string deviceId, CancellationToken cancellationToken) {
         Console.Out.WriteLine($"Trying to log stuff of {deviceId}");
         var cmd = Cli
             .Wrap("adb")
             .WithArguments(new List<string>
                 { "-s", deviceId, "logcat", "-T", DateTime.Today.ToString("MM-dd HH:mm:ss.fff") });
-        return cmd.Observe();
+        return cmd.Observe(cancellationToken);
     }
 }
