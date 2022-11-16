@@ -35,8 +35,8 @@ public partial class MainWindow : Window {
 
         logKeySelectionModel = new SelectionModel<string> { SingleSelect = false };
 
-        KeySearchTextBox.ObservableForProperty(textBox => textBox.Text, skipInitial: true)
-            .Subscribe(keySearchTextBoxChanged);
+        KeyFilterTextBox.ObservableForProperty(textBox => textBox.Text, skipInitial: true)
+            .Subscribe(keyFilterTextBoxChanged);
         ValueFilterTextBox.ObservableForProperty(textBox => textBox.Text, skipInitial: true)
             .Subscribe(valueFilterTextBoxChanged);
 
@@ -98,10 +98,10 @@ public partial class MainWindow : Window {
         ProcessPickerTextBlock.IsVisible = comboBox.SelectedIndex == -1;
     }
 
-    private void keySearchTextBoxChanged(IObservedChange<TextBox, string> newValue) {
-        KeySearchTextBlock.IsVisible = newValue.Value.Length == 0;
+    private void keyFilterTextBoxChanged(IObservedChange<TextBox, string> newValue) {
+        KeyFilterTextBlock.IsVisible = newValue.Value.Length == 0;
         Console.Out.WriteLine("Current text: " + newValue.Value);
-        Console.Out.WriteLine("prop text: " + getContext().keySearchText);
+        Console.Out.WriteLine("prop text: " + getContext().keyFilterText);
     }
 
     private void valueFilterTextBoxChanged(IObservedChange<TextBox, string> newValue) {

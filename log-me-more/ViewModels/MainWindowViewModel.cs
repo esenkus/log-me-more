@@ -3,12 +3,12 @@
 namespace log_me_more.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase {
-    private string _keySearchText = "";
+    private string _keyFilterText = "";
     private string _valueFilterText = "";
 
-    public string keySearchText {
-        get => _keySearchText;
-        set => this.RaiseAndSetIfChanged(ref _keySearchText, value);
+    public string keyFilterText {
+        get => _keyFilterText;
+        set => this.RaiseAndSetIfChanged(ref _keyFilterText, value);
     }
 
     public string valueFilterText {

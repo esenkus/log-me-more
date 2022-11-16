@@ -87,17 +87,17 @@
                      SelectionMode="Multiple, Toggle" />
         </Panel>
 
-        <TextBlock Name="KeySearchTextBlock" HorizontalAlignment="Left" VerticalAlignment="Top"
+        <TextBlock Name="KeyFilterTextBlock" HorizontalAlignment="Left" VerticalAlignment="Top"
                    Padding="30, 127, 0, 0">
-            Key Search
+            Key Filter
         </TextBlock>
-        <TextBox Name="KeySearchTextBox" Margin="20, 120, 0, 0"
+        <TextBox Name="KeyFilterTextBox" Margin="20, 120, 0, 0"
                  VerticalAlignment="Top" HorizontalAlignment="Left" MinWidth="300"
-                 Text="{Binding keySearchText, Mode=TwoWay}" />
+                 Text="{Binding keyFilterText, Mode=TwoWay}" />
 
         <TextBlock Name="ValueFilterTextBlock" HorizontalAlignment="Right" VerticalAlignment="Top"
-                   Padding="0, 127, 220, 0">
-            Value Search
+                   Padding="0, 127, 240, 0">
+            Value Filter
         </TextBlock>
         <TextBox Name="ValueFilterTextBox" Margin="0, 120, 20, 0"
                  VerticalAlignment="Top" HorizontalAlignment="Right" MinWidth="300"
