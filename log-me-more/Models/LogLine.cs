@@ -14,7 +14,17 @@ public class LogLine {
 
 
     public static LogLine fromString(string log) {
-        Console.Out.WriteLine($"Working with '{log}'");
+        if (log.StartsWith("---")) {
+            return new LogLine {
+                date = new DateOnly(),
+                time = new TimeOnly(),
+                mainProcessId = 0000,
+                workerProcessId = 0000,
+                logLevel = LogLevel.INFO,
+                logKey = "AndroidRuntime",
+                logMessage = log
+            };
+        }
         var scanner = new Scanner(log);
         var date = scanner.readNext<string>();
         var time = scanner.readNext<string>();
@@ -29,13 +39,13 @@ public class LogLine {
             mainProcessId = mainProcessId,
             workerProcessId = workerProcessId,
             logLevel = LogLevels.fromLog(logLevel),
-            logKey = logKey[..^1],
+            logKey = logKey,
             logMessage = logMessage
         };
     }
 
     // TODO: feature - move to LogAnalyzer and allow selection on what parts should be seen (like hide date, process etc.)
-    public override string ToString() {
+    public string toPrintable() {
         var dateString = date.ToString("MM-dd");
         var timeString = time.ToString("HH:mm:ss.fff");
         var logLevelString = logLevel.asShortString();

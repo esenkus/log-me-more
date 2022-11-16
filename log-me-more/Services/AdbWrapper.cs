@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CliWrap;
 using CliWrap.Buffered;
+using CliWrap.EventStream;
 
 namespace log_me_more.Services;
 
@@ -23,10 +26,12 @@ public class AdbWrapper {
         return devices;
     }
 
-    public void startLogging(string deviceId) {
-        var result = Cli
+    public async Task<IObservable<CommandEvent>> startLogging(string deviceId) {
+        Console.Out.WriteLine($"Trying to log stuff of {deviceId}");
+        var cmd = Cli
             .Wrap("adb")
-            .WithArguments(new List<string> { "-s", deviceId, "logcat" })
-            .ExecuteBufferedAsync();
+            .WithArguments(new List<string>
+                { "-s", deviceId, "logcat", "-T", DateTime.Today.ToString("MM-dd HH:mm:ss.fff") });
+        return cmd.Observe();
     }
 }

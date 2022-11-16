@@ -15,8 +15,12 @@ public class LogAnalyzer {
         logLines.Add(LogLine.fromString(logLine));
     }
 
+    public void clearLogs() {
+        logLines.Clear();
+    }
+
     public string showAllLogs() {
-        return string.Join("\n", logLines.Select(logLine => logLine.ToString()));
+        return string.Join("\n", logLines.Select(logLine => logLine.toPrintable()));
     }
 
     public HashSet<string> getAllKeys() {
@@ -39,6 +43,6 @@ public class LogAnalyzer {
             filteredLines = filteredLines
                 .Where(logLine => logLine.logMessage.ToLower().Contains(valueFilter.ToLower()));
         }
-        return string.Join("\n", filteredLines.Select(logLine => logLine.ToString()).ToList());
+        return string.Join("\n", filteredLines.Select(logLine => logLine.toPrintable()).ToList());
     }
 }
