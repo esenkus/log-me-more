@@ -9,13 +9,16 @@
         x:Class="log_me_more.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Background="{DynamicResource PrimaryBackgroundColor}"
-        Title="log_me_more"
-        Tapped="windowClicked">
+        Title="log_me_more">
 
     <Design.DataContext>
         <vm:MainWindowViewModel />
     </Design.DataContext>
     <Panel>
+        <Panel IsVisible="False" ZIndex="1" Name="PickerControlPanel" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+               Background="transparent"
+               Tapped="pickerControlPanelTapped"/>
+        
         <TextBlock Name="DevicePickerTextBlock" Padding="30, 27, 0, 0" HorizontalAlignment="Left"
                    VerticalAlignment="Top">
             Device Picker

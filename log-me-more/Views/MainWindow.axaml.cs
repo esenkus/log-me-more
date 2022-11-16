@@ -116,19 +116,9 @@ public partial class MainWindow : Window {
         return (MainWindowViewModel)DataContext!;
     }
 
-    private void windowClicked(object? sender, RoutedEventArgs e) {
-        var clickedOn = e.Source!.InteractiveParent!.GetType();
-        if (clickedOn == typeof(ContentPresenter) || clickedOn == typeof(Button)) {
-            return;
-        }
-        if (clickedOn != typeof(ListBoxItem)) {
-            LogLevelPanel.IsVisible = false;
-            LogKeyPanel.IsVisible = false;
-        }
-    }
-
     private void logLevelButtonClicked(object? sender, RoutedEventArgs e) {
         LogLevelPanel.IsVisible = true;
+        PickerControlPanel.IsVisible = true;
     }
 
     private void handleLogFiltering() {
@@ -161,6 +151,7 @@ public partial class MainWindow : Window {
 
     private void logKeyButtonClicked(object? sender, RoutedEventArgs e) {
         LogKeyPanel.IsVisible = true;
+        PickerControlPanel.IsVisible = true;
     }
 
     private void logKeySelectionChanged(object? sender, SelectionChangedEventArgs e) {
@@ -179,5 +170,12 @@ public partial class MainWindow : Window {
 
     private void pasteFromClipboardButtonClicked(object? sender, RoutedEventArgs e) {
         LogTextBox.Text = Application.Current!.Clipboard!.GetTextAsync().Result;
+    }
+
+    private void pickerControlPanelTapped(object? sender, RoutedEventArgs e) {
+        Console.Out.WriteLine("Tap!");
+        LogLevelPanel.IsVisible = false;
+        LogKeyPanel.IsVisible = false;
+        PickerControlPanel.IsVisible = false;
     }
 }
