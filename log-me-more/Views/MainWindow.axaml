@@ -95,15 +95,15 @@
                  VerticalAlignment="Top" HorizontalAlignment="Left" MinWidth="300"
                  Text="{Binding keySearchText, Mode=TwoWay}" />
 
-        <TextBlock Name="ValueSearchTextBlock" HorizontalAlignment="Right" VerticalAlignment="Top"
+        <TextBlock Name="ValueFilterTextBlock" HorizontalAlignment="Right" VerticalAlignment="Top"
                    Padding="0, 127, 220, 0">
             Value Search
         </TextBlock>
-        <TextBox Name="ValueSearchTextBox" Margin="0, 120, 20, 0"
+        <TextBox Name="ValueFilterTextBox" Margin="0, 120, 20, 0"
                  VerticalAlignment="Top" HorizontalAlignment="Right" MinWidth="300"
-                 Text="{Binding valueSearchText, Mode=TwoWay}" />
+                 Text="{Binding valueFilterText, Mode=TwoWay}" />
 
-        <TextBox Name="LogTextBox" IsReadOnly="True" AcceptsReturn="True" Margin="20, 180, 20, 20"
+        <TextBox FontFamily="Menlo" Name="LogTextBox" IsReadOnly="True" AcceptsReturn="True" Margin="20, 180, 20, 20"
                  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
     </Panel>
 </Window>

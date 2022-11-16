@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mime;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
@@ -16,10 +15,11 @@ namespace log_me_more.Views;
 
 public partial class MainWindow : Window {
     private readonly AdbWrapper adbWrapper = new();
-    private readonly List<string> logKeys;
+    private readonly LogAnalyzer logAnalyzer = new();
+    private readonly HashSet<string> logKeys;
     private readonly SelectionModel<string> logKeySelectionModel;
-    private readonly List<string> logLevels;
-    private readonly SelectionModel<string> logLevelSelectionModel;
+    private readonly HashSet<LogLevel> logLevels;
+    private readonly SelectionModel<LogLevel> logLevelSelectionModel;
     private List<string> devices;
 
     public MainWindow() {
@@ -27,16 +27,18 @@ public partial class MainWindow : Window {
         DataContext = new MainWindowViewModel();
         Console.Out.WriteLine("HOWDY");
 
-        logLevelSelectionModel = new SelectionModel<string> { SingleSelect = false };
-        logLevels = LogLevels.getAllLevels();
+        logLevelSelectionModel = new SelectionModel<LogLevel> { SingleSelect = false };
+        logLevels = LogLevels.getAllLevels().ToHashSet();
+
+        logAnalyzer.loadLog(FakeDataService.FAKE_LOG);
+        logKeys = logAnalyzer.getAllKeys();
 
         logKeySelectionModel = new SelectionModel<string> { SingleSelect = false };
-        logKeys = FakeDataService.FAKE_LOG_KEYS;
 
         KeySearchTextBox.ObservableForProperty(textBox => textBox.Text, skipInitial: true)
             .Subscribe(keySearchTextBoxChanged);
-        ValueSearchTextBox.ObservableForProperty(textBox => textBox.Text, skipInitial: true)
-            .Subscribe(valueSearchTextBoxChanged);
+        ValueFilterTextBox.ObservableForProperty(textBox => textBox.Text, skipInitial: true)
+            .Subscribe(valueFilterTextBoxChanged);
 
         devices = adbWrapper.getDevices();
         devices.ForEach(Console.Out.WriteLine);
@@ -57,7 +59,7 @@ public partial class MainWindow : Window {
         LogKeyPanel.Background = LogKeyListBox.Background;
 
         ProcessPickerComboBox.Items = new List<string> { "asd", "qwerty" };
-        LogTextBox.Text = FakeDataService.FAKE_LOG;
+        LogTextBox.Text = logAnalyzer.showAllLogs();
     }
 
     private void devicePickerSelectionChanged(object? sender, SelectionChangedEventArgs e) {
@@ -88,9 +90,7 @@ public partial class MainWindow : Window {
         }
     }
 
-    private void processPickerTapped(object? sender, RoutedEventArgs e) {
-        
-    }
+    private void processPickerTapped(object? sender, RoutedEventArgs e) { }
 
     private void processPickerSelectionChanged(object? sender, SelectionChangedEventArgs e) {
         var comboBox = (ComboBox)sender!;
@@ -104,10 +104,11 @@ public partial class MainWindow : Window {
         Console.Out.WriteLine("prop text: " + getContext().keySearchText);
     }
 
-    private void valueSearchTextBoxChanged(IObservedChange<TextBox, string> newValue) {
-        ValueSearchTextBlock.IsVisible = newValue.Value.Length == 0;
+    private void valueFilterTextBoxChanged(IObservedChange<TextBox, string> newValue) {
+        ValueFilterTextBlock.IsVisible = newValue.Value.Length == 0;
         Console.Out.WriteLine("Current text: " + newValue.Value);
-        Console.Out.WriteLine("prop text: " + getContext().valueSearchText);
+        Console.Out.WriteLine("prop text: " + getContext().valueFilterText);
+        handleLogFiltering();
     }
 
     private MainWindowViewModel getContext() {
@@ -129,9 +130,22 @@ public partial class MainWindow : Window {
         LogLevelPanel.IsVisible = true;
     }
 
+    private void handleLogFiltering() {
+        var logLevelItems = logLevelSelectionModel.SelectedItems.ToHashSet();
+        var logKeyItems = logKeySelectionModel.SelectedItems.ToHashSet();
+        var valueFilter = getContext().valueFilterText;
+
+        if (logLevelItems.Count == logLevels.Count && logKeyItems.Count == logKeys.Count && !valueFilter.Any()) {
+            LogTextBox.Text = logAnalyzer.showAllLogs();
+            return;
+        }
+        LogTextBox.Text = logAnalyzer.filterBy(logLevelItems, logKeyItems, valueFilter);
+    }
+
     private void logLevelSelectionChanged(object? sender, SelectionChangedEventArgs e) {
         Console.Out.WriteLine("Selected items changed, we now have: " +
                               string.Join(", ", logLevelSelectionModel.SelectedItems));
+        handleLogFiltering();
     }
 
     private void logLevelSelectAllButtonClicked(object? sender, RoutedEventArgs e) {
@@ -149,6 +163,7 @@ public partial class MainWindow : Window {
     private void logKeySelectionChanged(object? sender, SelectionChangedEventArgs e) {
         Console.Out.WriteLine("Selected items changed, we now have: " +
                               string.Join(", ", logKeySelectionModel.SelectedItems));
+        handleLogFiltering();
     }
 
     private void logKeySelectAllButtonClicked(object? sender, RoutedEventArgs e) {
