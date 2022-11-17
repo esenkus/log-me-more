@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using log_me_more.Models;
@@ -5,26 +6,46 @@ using log_me_more.Models;
 namespace log_me_more.Services;
 
 public class LogAnalyzer {
-    private List<LogLine> logLines = new();
+    private readonly SortedSet<string> allLogKeys = new();
+    private readonly List<LogLine> logLines = new();
 
     public void loadLog(string log) {
-        logLines = log.Split("\n").Select(LogLine.fromString).ToList();
+        foreach (var logLine in log.Split("\n")) {
+            try {
+                logLines.Add(LogLine.fromString(logLine));
+            } catch (FormatException) {
+                Console.Out.WriteLine($"Failed to convert line: {logLine}");
+            }
+        }
+        calculateAllKeys();
     }
 
-    public void addNewLine(string logLine) {
-        logLines.Add(LogLine.fromString(logLine));
+    public string? addNewLine(string logLine) {
+        var line = LogLine.fromString(logLine);
+        logLines.Add(line);
+        if (!allLogKeys.Contains(line.logKey)) {
+            allLogKeys.Add(line.logKey);
+            Console.Out.WriteLine($"New log key added {line.logKey}");
+            return line.logKey;
+        }
+        return null;
     }
 
     public void clearLogs() {
         logLines.Clear();
+        allLogKeys.Clear();
     }
 
     public string showAllLogs() {
         return string.Join("\n", logLines.Select(logLine => logLine.toPrintable()));
     }
 
-    public HashSet<string> getAllKeys() {
-        return logLines.Select(logLine => logLine.logKey).OrderBy(logLine => logLine).ToHashSet();
+    public ISet<string> getAllKeys() {
+        return allLogKeys;
+    }
+
+    private void calculateAllKeys() {
+        logLines.ForEach(logLine => allLogKeys.Add(logLine.logKey));
     }
 
     public string filterBy(HashSet<LogLevel> logLevels, HashSet<string> logKeys, string valueFilter = "",

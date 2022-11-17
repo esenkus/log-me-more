@@ -2,17 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Selection;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using CliWrap.EventStream;
 using log_me_more.Models;
 using log_me_more.Services;
 using log_me_more.ViewModels;
 using ReactiveUI;
+
+// ReSharper disable UnusedParameter.Local
 
 namespace log_me_more.Views;
 
@@ -21,10 +24,10 @@ public partial class MainWindow : Window {
     private readonly LogAnalyzer logAnalyzer = new();
     private readonly HashSet<LogLevel> logLevels;
     private readonly SelectionModel<LogLevel> logLevelSelectionModel;
-    private List<string> devices;
-    private HashSet<string> logKeys;
-    private SelectionModel<string> logKeySelectionModel;
     private CancellationTokenSource adbLogCommandTokenSource;
+    private List<string> devices;
+    private ISet<string> logKeys;
+    private SelectionModel<string> logKeySelectionModel;
 
     public MainWindow() {
         InitializeComponent();
@@ -34,8 +37,7 @@ public partial class MainWindow : Window {
         logLevelSelectionModel = new SelectionModel<LogLevel> { SingleSelect = false };
         logLevels = LogLevels.getAllLevels().ToHashSet();
 
-        // logAnalyzer.loadLog(FakeDataService.FAKE_LOG);
-        logKeys = new HashSet<string>(); // = logAnalyzer.getAllKeys();
+        logKeys = new HashSet<string>();
 
         logKeySelectionModel = new SelectionModel<string> { SingleSelect = false };
 
@@ -48,41 +50,41 @@ public partial class MainWindow : Window {
         Console.Out.WriteLine("Connected devices: ");
         devices.ForEach(Console.Out.WriteLine);
 
-        // devices = FakeDataService.FAKE_DEVICES;
-
         DevicePickerComboBox.Items = devices;
 
         LogLevelListBox.Items = logLevels;
         LogLevelListBox.Selection = logLevelSelectionModel;
         logLevelSelectionModel.SelectAll();
 
-        // LogKeyListBox.Items = logKeys;
-        // LogKeyListBox.Selection = logKeySelectionModel;
-        // logKeySelectionModel.SelectAll();
-
         LogLevelPanel.Background = LogLevelListBox.Background;
         LogKeyPanel.Background = LogKeyListBox.Background;
 
         ProcessPickerComboBox.Items = new List<string> { "asd", "qwerty" };
-        // LogTextBox.Text = logAnalyzer.showAllLogs();
         // tickTock();
-        Console.Out.WriteLine("Wee");
     }
 
 
     private async void tickTock() {
+        var changing = false;
         var timer = new PeriodicTimer(TimeSpan.FromSeconds(5));
         while (await timer.WaitForNextTickAsync()) {
             Console.Out.WriteLine("TICK TICK MOTHERFUCKER");
-            recreateLogKeysAndHandleFiltering();
+            if (changing) {
+                Console.Out.WriteLine("Adding new entries");
+                var newKey = logAnalyzer.addNewLine(
+                    "11-14 15:17:24.671  2648  6292  W  android.os.Debug         failed to get memory consumption info: -1");
+                recreateLogKeysWithModelAndHandleFiltering(newKey);
+            }
+            changing = !changing;
         }
     }
 
     private void handleAdbLoggingForDevice(string deviceId) {
         logAnalyzer.clearLogs();
+        logLevelSelectionModel.SelectAll();
 
         adbLogCommandTokenSource = new CancellationTokenSource();
-        CancellationToken token = adbLogCommandTokenSource.Token;
+        var token = adbLogCommandTokenSource.Token;
         adbWrapper.startLogging(deviceId, token).Result.ForEachAsync(commandEvent => {
             switch (commandEvent) {
                 case ExitedCommandEvent exited:
@@ -93,8 +95,8 @@ public partial class MainWindow : Window {
                     break;
                 case StandardOutputCommandEvent stdOut:
                     Console.Out.WriteLine($"output: {stdOut.Text}");
-                    logAnalyzer.addNewLine(stdOut.Text);
-                    // Dispatcher.UIThread.InvokeAsync(recreateLogKeysAndHandleFiltering);
+                    var newKey = logAnalyzer.addNewLine(stdOut.Text);
+                    Dispatcher.UIThread.InvokeAsync(() => recreateLogKeysWithModelAndHandleFiltering(newKey));
                     break;
                 case StartedCommandEvent started:
                     Console.Out.WriteLine($"Process started: {started.ProcessId}");
@@ -107,10 +109,12 @@ public partial class MainWindow : Window {
 
     private void devicePickerSelectionChanged(object? sender, SelectionChangedEventArgs e) {
         var comboBox = (ComboBox)sender!;
-        Console.Out.WriteLine("Selection changed to " + comboBox.SelectedItem);
         DevicePickerTextBlock.IsVisible = comboBox.SelectedIndex == -1;
         ProcessPickerComboBox.IsEnabled = comboBox.SelectedIndex != -1;
-        handleAdbLoggingForDevice(comboBox.SelectedItem!.ToString()!);
+        if (comboBox.SelectedIndex != -1) {
+            Console.Out.WriteLine("Selection changed to " + comboBox.SelectedItem);
+            handleAdbLoggingForDevice(comboBox.SelectedItem!.ToString()!);
+        }
     }
 
     private void devicePickerTapped(object? sender, RoutedEventArgs e) {
@@ -174,10 +178,10 @@ public partial class MainWindow : Window {
         if (logLevelItems.Count == logLevels.Count && logKeyItems.Count == logKeys.Count
                                                    && !valueFilter.Any() && !keyFilter.Any()) {
             LogTextBox.Text = logAnalyzer.showAllLogs();
-            return;
+        } else {
+            LogTextBox.Text = logAnalyzer.filterBy(logLevelItems, logKeyItems, valueFilter, keyFilter);
         }
-        LogTextBox.Text = logAnalyzer.filterBy(logLevelItems, logKeyItems, valueFilter, keyFilter);
-        LogTextBox.CaretIndex = int.MaxValue;
+        LogTextBox.CaretIndex = LogTextBox.Text.LastIndexOf("\n") + 2;
     }
 
     private void logLevelSelectionChanged(object? sender, SelectionChangedEventArgs e) {
@@ -214,26 +218,48 @@ public partial class MainWindow : Window {
     }
 
     private void pasteFromClipboardButtonClicked(object? sender, RoutedEventArgs e) {
+        if (adbLogCommandTokenSource != null) {
+            adbLogCommandTokenSource.Cancel();
+            DevicePickerComboBox.SelectedIndex = -1;
+        }
         var logs = Application.Current!.Clipboard!.GetTextAsync().Result;
+        Console.Out.WriteLine("Adding logs from clipboard");
         logAnalyzer.loadLog(logs);
         logLevelSelectionModel.SelectAll();
         recreateLogKeysAndHandleFiltering();
         logKeySelectionModel.SelectAll();
-        adbLogCommandTokenSource.Cancel();
     }
 
     private void recreateLogKeysAndHandleFiltering() {
-        // TODO: create a new method to simulate timer and new log keys addition, try filtering only some keys, click button and check results, results should contain the new key (select it), but keep all other selections intact
         logKeys = logAnalyzer.getAllKeys();
         LogKeyListBox.Items = logKeys;
-        // logKeys.Clear();
-        // foreach (var key in logAnalyzer.getAllKeys()) {
-        //     logKeys.Add(key);
-        // }
 
-        // logKeySelectionModel = new SelectionModel<string> { SingleSelect = false };
         LogKeyListBox.Selection = logKeySelectionModel;
-        // logKeySelectionModel.SelectAll();
+        handleLogFiltering();
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private void recreateLogKeysWithModelAndHandleFiltering(string? newKey) {
+        if (newKey == null) {
+            handleLogFiltering();
+            return;
+        }
+        
+        var currentSelections = logKeySelectionModel.SelectedItems.ToHashSet();
+        
+        logKeys = logAnalyzer.getAllKeys();
+        LogKeyListBox.Items = logKeys.ToArray();
+        logKeySelectionModel = new SelectionModel<string> { SingleSelect = false };
+        LogKeyListBox.Selection = logKeySelectionModel;
+        var source = logKeySelectionModel.Source;
+        for (var i = 0; i < source.Count(); i++) {
+            var key = source.ElementAt(i);
+            if (newKey == key) {
+                logKeySelectionModel.Select(i);
+            } else if (currentSelections.Contains(key)) {
+                logKeySelectionModel.Select(i);
+            }
+        }
         handleLogFiltering();
     }
 

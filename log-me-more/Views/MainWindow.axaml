@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         MinWidth="800" MinHeight="500"
-        Width="800" Height="500"
+        Width="1300" Height="700"
         x:Class="log_me_more.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Background="{DynamicResource PrimaryBackgroundColor}"
@@ -15,10 +15,11 @@
         <vm:MainWindowViewModel />
     </Design.DataContext>
     <Panel>
-        <Panel IsVisible="False" ZIndex="1" Name="PickerControlPanel" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+        <Panel IsVisible="False" ZIndex="1" Name="PickerControlPanel" VerticalAlignment="Stretch"
+               HorizontalAlignment="Stretch"
                Background="transparent"
-               Tapped="pickerControlPanelTapped"/>
-        
+               Tapped="pickerControlPanelTapped" />
+
         <TextBlock Name="DevicePickerTextBlock" Padding="30, 27, 0, 0" HorizontalAlignment="Left"
                    VerticalAlignment="Top">
             Device Picker
