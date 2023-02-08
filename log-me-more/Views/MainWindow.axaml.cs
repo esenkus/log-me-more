@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
@@ -75,6 +76,7 @@ public partial class MainWindow : Window {
                     "11-14 15:17:24.671  2648  6292  W  android.os.Debug         failed to get memory consumption info: -1");
                 recreateLogKeysWithModelAndHandleFiltering(newKey);
             }
+
             changing = !changing;
         }
     }
@@ -122,18 +124,21 @@ public partial class MainWindow : Window {
         if (devices.SequenceEqual(newDevices)) {
             return;
         }
+
         if (DevicePickerComboBox.SelectedIndex == -1) {
             devices = newDevices;
             DevicePickerComboBox.Items = devices;
             return;
         }
+
         var currentDevice = devices[DevicePickerComboBox.SelectedIndex];
         devices = newDevices;
         DevicePickerComboBox.Items = devices;
         var currentDeviceIndex = devices.IndexOf(currentDevice);
         if (currentDeviceIndex != -1) {
             DevicePickerComboBox.SelectedIndex = currentDeviceIndex;
-        } else {
+        }
+        else {
             DevicePickerComboBox.SelectedIndex = -1;
         }
     }
@@ -178,9 +183,11 @@ public partial class MainWindow : Window {
         if (logLevelItems.Count == logLevels.Count && logKeyItems.Count == logKeys.Count
                                                    && !valueFilter.Any() && !keyFilter.Any()) {
             LogTextBox.Text = logAnalyzer.showAllLogs();
-        } else {
+        }
+        else {
             LogTextBox.Text = logAnalyzer.filterBy(logLevelItems, logKeyItems, valueFilter, keyFilter);
         }
+
         LogTextBox.CaretIndex = LogTextBox.Text.LastIndexOf("\n") + 2;
     }
 
@@ -230,6 +237,27 @@ public partial class MainWindow : Window {
         logKeySelectionModel.SelectAll();
     }
 
+    private void openFromFile(object? sender, RoutedEventArgs e) {
+        if (adbLogCommandTokenSource != null) {
+            adbLogCommandTokenSource.Cancel();
+            DevicePickerComboBox.SelectedIndex = -1;
+        }
+
+        open();
+    }
+
+    private async void open() {
+        var dialog = new OpenFileDialog();
+        dialog.Filters.Add(new FileDialogFilter { Name = "Text", Extensions = { "txt" } });
+        var result = await dialog.ShowAsync(this);
+        var pathToFile = result.First();
+        var logs = await File.ReadAllTextAsync(pathToFile);
+        logAnalyzer.loadLog(logs);
+        logLevelSelectionModel.SelectAll();
+        recreateLogKeysAndHandleFiltering();
+        logKeySelectionModel.SelectAll();
+    }
+
     private void recreateLogKeysAndHandleFiltering() {
         logKeys = logAnalyzer.getAllKeys();
         LogKeyListBox.Items = logKeys;
@@ -244,9 +272,9 @@ public partial class MainWindow : Window {
             handleLogFiltering();
             return;
         }
-        
+
         var currentSelections = logKeySelectionModel.SelectedItems.ToHashSet();
-        
+
         logKeys = logAnalyzer.getAllKeys();
         LogKeyListBox.Items = logKeys.ToArray();
         logKeySelectionModel = new SelectionModel<string> { SingleSelect = false };
@@ -256,10 +284,12 @@ public partial class MainWindow : Window {
             var key = source.ElementAt(i);
             if (newKey == key) {
                 logKeySelectionModel.Select(i);
-            } else if (currentSelections.Contains(key)) {
+            }
+            else if (currentSelections.Contains(key)) {
                 logKeySelectionModel.Select(i);
             }
         }
+
         handleLogFiltering();
     }
 

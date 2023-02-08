@@ -54,6 +54,12 @@
             Paste from clipboard
         </Button>
 
+        <Button Name="OpenFileButton" Margin="0, 20, 200, 0" HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Click="openFromFile">
+            Open from file
+        </Button>
+        
         <Button Name="LogLevelButton" Margin="20, 70, 0, 0" HorizontalAlignment="Left" VerticalAlignment="Top"
                 Click="logLevelButtonClicked">
             Log Level Picker

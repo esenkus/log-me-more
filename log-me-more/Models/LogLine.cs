@@ -14,7 +14,7 @@ public class LogLine {
 
 
     public static LogLine fromString(string log) {
-        if (log.StartsWith("---")) {
+        if (log.StartsWith("---") || log.StartsWith("  ")) {
             return new LogLine {
                 date = new DateOnly(),
                 time = new TimeOnly(),
@@ -25,16 +25,33 @@ public class LogLine {
                 logMessage = log
             };
         }
+
         var scanner = new Scanner(log);
         var date = scanner.readNext<string>();
         var time = scanner.readNext<string>();
-        var mainProcessId = scanner.readNext<int>();
-        var workerProcessId = scanner.readNext<int>();
-        var logLevel = scanner.readNext<string>();
-        var logKey = scanner.readNext<string>();
+        var possibleBothProcessesIds = scanner.readNext<string>();
+        int mainProcessId;
+        int workerProcessId;
+        string logLevel;
+        string logKey;
+        if (possibleBothProcessesIds.Contains('-')) {
+            mainProcessId = int.Parse(possibleBothProcessesIds.Split("-")[0]);
+            var workerProcessIdString = possibleBothProcessesIds.Split("-")[1];
+            workerProcessId = int.Parse(workerProcessIdString.Substring(0, workerProcessIdString.IndexOf("/")));
+            var levelKey = scanner.readNext<string>().Split("/");
+            logLevel = levelKey[0];
+            logKey = levelKey[1];
+        }
+        else {
+            mainProcessId = int.Parse(possibleBothProcessesIds);
+            workerProcessId = scanner.readNext<int>();
+            logLevel = scanner.readNext<string>();
+            logKey = scanner.readNext<string>();
+        }
+
         var logMessage = scanner.ReadToEnd().Trim();
         return new LogLine {
-            date = DateOnly.ParseExact(date, "MM-dd"),
+            date = DateOnly.Parse(date),
             time = TimeOnly.ParseExact(time, "HH:mm:ss.fff"),
             mainProcessId = mainProcessId,
             workerProcessId = workerProcessId,

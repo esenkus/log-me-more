@@ -11,6 +11,9 @@ public class LogAnalyzer {
 
     public void loadLog(string log) {
         foreach (var logLine in log.Split("\n")) {
+            if (string.IsNullOrWhiteSpace(logLine)) {
+                continue;
+            }
             try {
                 logLines.Add(LogLine.fromString(logLine));
             } catch (FormatException) {
