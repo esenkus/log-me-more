@@ -6,8 +6,8 @@ namespace log_me_more.Models;
 public class LogLine {
     public DateOnly date { get; private init; }
     public TimeOnly time { get; private init; }
-    public int mainProcessId { get; private init; }
-    public int workerProcessId { get; private init; }
+    public int? mainProcessId { get; private init; }
+    public int? workerProcessId { get; private init; }
     public LogLevel logLevel { get; private init; }
     public string logKey { get; private init; }
     public string logMessage { get; private init; }
@@ -30,8 +30,8 @@ public class LogLine {
         var date = scanner.readNext<string>();
         var time = scanner.readNext<string>();
         var possibleBothProcessesIds = scanner.readNext<string>();
-        int mainProcessId;
-        int workerProcessId;
+        int? mainProcessId = null;
+        int? workerProcessId = null;
         string logLevel;
         string logKey;
         if (possibleBothProcessesIds.Contains('-')) {
@@ -41,6 +41,11 @@ public class LogLine {
             var levelKey = scanner.readNext<string>().Split("/");
             logLevel = levelKey[0];
             logKey = levelKey[1];
+        }
+        else if (possibleBothProcessesIds.EndsWith(":")) {
+            // no processId, straight to logLevel and key
+            logLevel = possibleBothProcessesIds[..^1];
+            logKey = scanner.readNext<string>();
         }
         else {
             mainProcessId = int.Parse(possibleBothProcessesIds);

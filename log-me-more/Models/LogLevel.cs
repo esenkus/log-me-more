@@ -36,14 +36,27 @@ public static class LogLevels {
     }
 
     public static LogLevel fromLog(string logLevel) {
-        return logLevel switch {
-            "V" => LogLevel.VERBOSE,
-            "D" => LogLevel.DEBUG,
-            "I" => LogLevel.INFO,
-            "W" => LogLevel.WARNING,
-            "E" => LogLevel.ERROR,
-            "A" => LogLevel.ASSERT,
-            _ => throw new ArgumentException($"Failed to parse {logLevel}")
-        };
+        switch (logLevel) {
+            case "V":
+            case "VERBOSE":
+                return LogLevel.VERBOSE;
+            case "D":
+            case "DEBUG":
+                return LogLevel.DEBUG;
+            case "I":
+            case "INFO":
+                return LogLevel.INFO;
+            case "W":
+            case "WARN":
+                return LogLevel.WARNING;
+            case "E":
+            case "ERROR":
+                return LogLevel.ERROR;
+            case "A":
+            case "ASSERT":
+                return LogLevel.ASSERT;
+            default:
+                throw new ArgumentException($"Failed to parse {logLevel}");
+        }
     }
 }
