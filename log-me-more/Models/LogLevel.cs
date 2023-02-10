@@ -51,12 +51,13 @@ public static class LogLevels {
                 return LogLevel.WARNING;
             case "E":
             case "ERROR":
+            case "F": // this one's weird, but seen in wild
                 return LogLevel.ERROR;
             case "A":
             case "ASSERT":
                 return LogLevel.ASSERT;
             default:
-                throw new ArgumentException($"Failed to parse {logLevel}");
+                throw new ArgumentException($"Failed to parse log level: {logLevel}");
         }
     }
 }

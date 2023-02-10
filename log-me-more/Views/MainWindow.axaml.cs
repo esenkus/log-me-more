@@ -188,7 +188,7 @@ public partial class MainWindow : Window {
             LogTextBox.Text = logAnalyzer.filterBy(logLevelItems, logKeyItems, valueFilter, keyFilter);
         }
 
-        LogTextBox.CaretIndex = LogTextBox.Text.LastIndexOf("\n") + 2;
+        // LogTextBox.CaretIndex = LogTextBox.Text.LastIndexOf("\n") + 2;
     }
 
     private void logLevelSelectionChanged(object? sender, SelectionChangedEventArgs e) {
@@ -229,6 +229,7 @@ public partial class MainWindow : Window {
             adbLogCommandTokenSource.Cancel();
             DevicePickerComboBox.SelectedIndex = -1;
         }
+
         var logs = Application.Current!.Clipboard!.GetTextAsync().Result;
         Console.Out.WriteLine("Adding logs from clipboard");
         logAnalyzer.loadLog(logs);
